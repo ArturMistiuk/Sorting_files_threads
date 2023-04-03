@@ -52,5 +52,5 @@ if __name__ == '__main__':
         thread = Thread(target=sort_files, args=(folder, ))
         threads.append(thread)
         thread.start()
-
+        
     [thread.join() for thread in threads]
