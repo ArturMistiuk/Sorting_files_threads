@@ -1,16 +1,20 @@
 import argparse
 import logging
+import time
 from pathlib import Path
 from shutil import move
 from threading import Thread, Semaphore
 
+
 # Block with parsing arguments
-parser = argparse.ArgumentParser(description='Console app for sorting files in threads.')
-parser.add_argument('-s', '--source', required=True)
-parser.add_argument('-o', '--output', default='sorted')
+parser = argparse.ArgumentParser(
+    description="Console app for sorting files in threads."
+)
+parser.add_argument("-s", "--source", required=True)
+parser.add_argument("-o", "--output", default="sorted")
 args = vars(parser.parse_args())
-source = args.get('source')
-output = args.get('output')
+source = args.get("source")
+output = args.get("output")
 
 
 # list with all the folders
@@ -38,8 +42,13 @@ def sort_files(path: Path):
                     logging.error(e)
 
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s: %(message)s")
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s: %(message)s",
+        datefmt="%H:%M:%S",
+        handlers=[logging.StreamHandler()],
+    )
     directory_path = Path(source)
     output_folder = Path(output)
 
@@ -47,10 +56,15 @@ if __name__ == '__main__':
     get_folders_paths(directory_path)
 
     threads = []
+    logging.info("Starting...")
+    start_time = time.time()
 
     for folder in paths_to_folders:
-        thread = Thread(target=sort_files, args=(folder, ))
+        thread = Thread(target=sort_files, args=(folder,))
         threads.append(thread)
         thread.start()
 
     [thread.join() for thread in threads]
+
+    end_time = time.time()
+    logging.info(f"Finished for {end_time - start_time} seconds")
